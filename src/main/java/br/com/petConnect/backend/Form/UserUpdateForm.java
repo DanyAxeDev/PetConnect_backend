@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Getter
@@ -16,7 +17,7 @@ public class UserUpdateForm {
     
     private String lastName;
     
-    private Date birthDate;
+    private LocalDate birthDate;
     
     private String phone;
     

@@ -1,0 +1,12 @@
+CREATE TABLE IF NOT EXISTS adoption_story (
+    id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    human VARCHAR(255) NOT NULL,
+    pet VARCHAR(255) NOT NULL,
+    story TEXT NOT NULL,
+    photo TEXT,
+    approved BOOLEAN DEFAULT false,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);

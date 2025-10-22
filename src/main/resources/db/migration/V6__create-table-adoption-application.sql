@@ -1,0 +1,13 @@
+CREATE TABLE IF NOT EXISTS adoption_application (
+    id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    user_name VARCHAR(255) NOT NULL,
+    user_contact VARCHAR(255) NOT NULL,
+    pet_id BIGINT NOT NULL,
+    message TEXT,
+    status VARCHAR(20) DEFAULT 'PENDING',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (pet_id) REFERENCES pet(id) ON DELETE CASCADE
+);

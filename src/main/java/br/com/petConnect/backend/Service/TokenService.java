@@ -23,17 +23,17 @@ public class TokenService {
     private String secret;
 
     public String generateToken(Authentication authentication) {
-        User logado = (User) authentication.getPrincipal();
-        Date hoje = new Date();
-        Date dataExpiracao = new Date(hoje.getTime() + Long.parseLong(expiration));
+        User logged = (User) authentication.getPrincipal();
+        Date today = new Date();
+        Date expirationDate = new Date(today.getTime() + Long.parseLong(expiration));
 
         Key key = Keys.hmacShaKeyFor(secret.getBytes());
 
         return Jwts.builder()
-                .setIssuer("API MedVoll")
-                .setSubject(logado.getId().toString())
-                .setIssuedAt(hoje)
-                .setExpiration(dataExpiracao)
+                .setIssuer("PetConnect")
+                .setSubject(logged.getId().toString())
+                .setIssuedAt(today)
+                .setExpiration(expirationDate)
                 .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
     }
@@ -65,5 +65,20 @@ public class TokenService {
                 .getBody();
 
         return Long.parseLong(claims.getSubject());
+    }
+
+    public String generateTokenForOAuth2User(User user) {
+        Date today = new Date();
+        Date expirationDate = new Date(today.getTime() + Long.parseLong(expiration));
+
+        Key key = Keys.hmacShaKeyFor(secret.getBytes());
+
+        return Jwts.builder()
+                .setIssuer("PetConnect")
+                .setSubject(user.getId().toString())
+                .setIssuedAt(today)
+                .setExpiration(expirationDate)
+                .signWith(key, SignatureAlgorithm.HS512)
+                .compact();
     }
 }

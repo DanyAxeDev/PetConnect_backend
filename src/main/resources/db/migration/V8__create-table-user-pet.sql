@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS user_pet (
+    user_id BIGINT NOT NULL,
+    pet_id BIGINT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (user_id, pet_id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (pet_id) REFERENCES pet(id) ON DELETE CASCADE
+);

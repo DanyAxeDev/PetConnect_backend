@@ -2,6 +2,7 @@ package br.com.petConnect.backend.Service;
 
 import br.com.petConnect.backend.DTO.UserDto;
 import br.com.petConnect.backend.Form.UserUpdateForm;
+import br.com.petConnect.backend.Form.PasswordChangeForm;
 import br.com.petConnect.backend.Model.Profile;
 import br.com.petConnect.backend.Model.User;
 import br.com.petConnect.backend.Repository.ProfileRepository;
@@ -107,6 +108,24 @@ public class UserService {
         User savedUser = userRepository.save(user);
         
         return convertToDto(savedUser);
+    }
+    
+    public void changePassword(Long id, PasswordChangeForm form) {
+        Optional<User> optionalUser = userRepository.findById(id);
+        if (optionalUser.isEmpty()) {
+            throw new RuntimeException("Usuário não encontrado com ID: " + id);
+        }
+        
+        User user = optionalUser.get();
+        
+        // Verificar se a senha atual está correta
+        if (!passwordEncoder.matches(form.getCurrentPassword(), user.getPassword())) {
+            throw new RuntimeException("Senha atual incorreta");
+        }
+        
+        // Atualizar com a nova senha
+        user.setPassword(passwordEncoder.encode(form.getNewPassword()));
+        userRepository.save(user);
     }
     
     public void deleteUser(Long id) {

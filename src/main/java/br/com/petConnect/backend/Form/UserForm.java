@@ -9,6 +9,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Getter
@@ -22,7 +23,7 @@ public class UserForm {
     private String lastName;
     
     @NotNull(message = "Data de nascimento é obrigatória")
-    private Date birthDate;
+    private LocalDate birthDate;
     
     private String phone;
     

@@ -1,10 +1,16 @@
 package br.com.petConnect.backend.Form;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 public class LoginForm {
 
+    @NotBlank(message = "E-mail é obrigatório")
+    @Email(message = "Formato de e-mail inválido")
     private String email;
+
+    @NotBlank(message = "Senha é obrigatória")
     private String password;
 
     public String getEmail() {

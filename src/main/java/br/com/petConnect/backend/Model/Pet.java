@@ -35,6 +35,8 @@ public class Pet {
     
     private String health;
     private String about;
+    private Double latitude;
+    private Double longitude;
     
     @Embedded
     private Photos photos;

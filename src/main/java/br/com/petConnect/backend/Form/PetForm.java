@@ -37,6 +37,8 @@ public class PetForm {
     private String photo1;
     private String photo2;
     private String photo3;
+    private Double latitude;
+    private Double longitude;
     
     @NotNull(message = "ID do dono é obrigatório")
     private Long ownerId;
@@ -67,6 +69,8 @@ public class PetForm {
         
         pet.setHealth(this.health);
         pet.setAbout(this.about);
+        pet.setLatitude(this.latitude);
+        pet.setLongitude(this.longitude);
         
         if (this.photo1 != null || this.photo2 != null || this.photo3 != null) {
             Pet.Photos photos = new Pet.Photos();

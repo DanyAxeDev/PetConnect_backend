@@ -75,6 +75,18 @@ public class PetController {
         return ResponseEntity.ok(pets);
     }
 
+    @GetMapping("/nearby")
+    public ResponseEntity<List<PetDto>> findNearbyPets(
+            @RequestParam Long userId,
+            @RequestParam Double latitude,
+            @RequestParam Double longitude) {
+        if (latitude == null || longitude == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        List<PetDto> pets = petService.findNearbyPets(userId, latitude, longitude);
+        return ResponseEntity.ok(pets);
+    }
+
     @GetMapping("/search/name")
     public ResponseEntity<List<PetDto>> findByName(@RequestParam String name) {
         List<PetDto> pets = petService.findByName(name);
@@ -93,35 +105,35 @@ public class PetController {
         return ResponseEntity.ok(pets);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<PetDto> findById(@PathVariable Long id) {
+    @GetMapping("/{id:\\d+}")
+    public ResponseEntity<PetDto> findById(@PathVariable("id") Long id) {
         Optional<PetDto> pet = petService.findById(id);
         return pet.map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/{id}/available")
-    public ResponseEntity<PetDto> findAvailableById(@PathVariable Long id) {
+    @GetMapping("/{id:\\d+}/available")
+    public ResponseEntity<PetDto> findAvailableById(@PathVariable("id") Long id) {
         Optional<PetDto> pet = petService.findAvailableById(id);
         return pet.map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<PetDto> update(@PathVariable Long id, @Valid @RequestBody PetUpdateForm form) {
+    @PutMapping("/{id:\\d+}")
+    public ResponseEntity<PetDto> update(@PathVariable("id") Long id, @Valid @RequestBody PetUpdateForm form) {
         Optional<PetDto> pet = petService.update(id, form);
         return pet.map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PatchMapping("/{id}/availability")
-    public ResponseEntity<Boolean> setAvailability(@PathVariable Long id, @RequestParam boolean available) {
+    @PatchMapping("/{id:\\d+}/availability")
+    public ResponseEntity<Boolean> setAvailability(@PathVariable("id") Long id, @RequestParam boolean available) {
         boolean updated = petService.setAvailability(id, available);
         return updated ? ResponseEntity.ok(true) : ResponseEntity.notFound().build();
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    @DeleteMapping("/{id:\\d+}")
+    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
         boolean deleted = petService.delete(id);
         return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }

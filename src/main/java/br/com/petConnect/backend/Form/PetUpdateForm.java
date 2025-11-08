@@ -33,6 +33,8 @@ public class PetUpdateForm {
     private String photo1;
     private String photo2;
     private String photo3;
+    private Double latitude;
+    private Double longitude;
     private String contactOption;
     private Boolean available;
 
@@ -60,6 +62,8 @@ public class PetUpdateForm {
         
         if (this.health != null) pet.setHealth(this.health);
         if (this.about != null) pet.setAbout(this.about);
+        if (this.latitude != null) pet.setLatitude(this.latitude);
+        if (this.longitude != null) pet.setLongitude(this.longitude);
         
         if (pet.getPhotos() == null && (this.photo1 != null || this.photo2 != null || this.photo3 != null)) {
             pet.setPhotos(new Pet.Photos());

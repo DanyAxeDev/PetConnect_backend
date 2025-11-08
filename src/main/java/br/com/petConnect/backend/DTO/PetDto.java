@@ -29,6 +29,9 @@ public class PetDto {
     private String photo1;
     private String photo2;
     private String photo3;
+    private Double latitude;
+    private Double longitude;
+    private Double distance;
     private Long ownerId;
     private String ownerName;
     private String contactOption;
@@ -63,6 +66,8 @@ public class PetDto {
         
         dto.setHealth(pet.getHealth());
         dto.setAbout(pet.getAbout());
+        dto.setLatitude(pet.getLatitude());
+        dto.setLongitude(pet.getLongitude());
         
         if (pet.getPhotos() != null) {
             dto.setPhoto1(pet.getPhotos().getPhoto1());

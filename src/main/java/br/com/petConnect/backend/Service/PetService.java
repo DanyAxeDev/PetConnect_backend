@@ -4,8 +4,10 @@ import br.com.petConnect.backend.DTO.PetDto;
 import br.com.petConnect.backend.Form.PetForm;
 import br.com.petConnect.backend.Form.PetUpdateForm;
 import br.com.petConnect.backend.Model.Pet;
+import br.com.petConnect.backend.Model.Preferences;
 import br.com.petConnect.backend.Model.User;
 import br.com.petConnect.backend.Repository.PetRepository;
+import br.com.petConnect.backend.Repository.PreferencesRepository;
 import br.com.petConnect.backend.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -13,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,6 +28,11 @@ public class PetService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private PreferencesRepository preferencesRepository;
+
+    private static final double DEFAULT_MAX_DISTANCE_KM = 50.0;
 
     @Transactional
     public PetDto create(PetForm form) {
@@ -69,6 +77,45 @@ public class PetService {
     public Page<PetDto> findAvailablePetsWithFilters(String species, String gender, String size, Pageable pageable) {
         return petRepository.findAvailablePetsWithFilters(species, gender, size, pageable)
                 .map(PetDto::fromEntity);
+    }
+
+    public List<PetDto> findNearbyPets(Long userId, double latitude, double longitude) {
+        double maxDistance = preferencesRepository.findByUserId(userId)
+                .map(Preferences::getMaxDistance)
+                .filter(dist -> dist != null && dist > 0)
+                .map(Integer::doubleValue)
+                .orElse(DEFAULT_MAX_DISTANCE_KM);
+
+        return petRepository.findByAvailableTrue().stream()
+                .filter(pet -> pet.getLatitude() != null && pet.getLongitude() != null)
+                .filter(pet -> pet.getOwner() == null || !pet.getOwner().getId().equals(userId))
+                .map(pet -> {
+                    double distance = calculateDistanceInKm(latitude, longitude, pet.getLatitude(), pet.getLongitude());
+                    if (distance <= maxDistance) {
+                        PetDto dto = PetDto.fromEntity(pet);
+                        dto.setDistance(distance);
+                        return dto;
+                    }
+                    return null;
+                })
+                .filter(dto -> dto != null)
+                .sorted(Comparator.comparing(PetDto::getDistance))
+                .collect(Collectors.toList());
+    }
+
+    private double calculateDistanceInKm(double lat1, double lon1, double lat2, double lon2) {
+        final int EARTH_RADIUS_KM = 6371;
+
+        double latDistance = Math.toRadians(lat2 - lat1);
+        double lonDistance = Math.toRadians(lon2 - lon1);
+
+        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+        return EARTH_RADIUS_KM * c;
     }
 
     public List<PetDto> findByLocation(String city, String state) {

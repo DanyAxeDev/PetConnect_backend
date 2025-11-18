@@ -6,6 +6,7 @@ import br.com.petConnect.backend.Model.User;
 import br.com.petConnect.backend.Repository.UserRepository;
 import br.com.petConnect.backend.Service.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -18,7 +19,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/auth/oauth2")
-@CrossOrigin("http://localhost:5173")
+@CrossOrigin(origins = "*")
 public class OAuth2Controller {
 
     @Autowired
@@ -26,6 +27,9 @@ public class OAuth2Controller {
 
     @Autowired
     private TokenService tokenService;
+
+    @Value("${app.frontend.url}")
+    private String frontendUrl;
 
     @GetMapping("/success")
     public ResponseEntity<?> oauth2Success(Authentication authentication) {
@@ -81,7 +85,7 @@ public class OAuth2Controller {
             String token = tokenService.generateTokenForOAuth2User(user);
             
             // Redirecionar para o frontend com o token
-            String redirectUrl = "http://localhost:5173/login?token=" + token + "&type=Bearer";
+            String redirectUrl = frontendUrl + "/login?token=" + token + "&type=Bearer";
             return ResponseEntity.status(HttpStatus.FOUND)
                 .header("Location", redirectUrl)
                 .build();
@@ -89,7 +93,7 @@ public class OAuth2Controller {
         } catch (Exception e) {
             System.out.println("Erro no OAuth2 Success: " + e.getMessage());
             e.printStackTrace();
-            String errorUrl = "http://localhost:5173/login?error=oauth2_failed";
+            String errorUrl = frontendUrl + "/login?error=oauth2_failed";
             return ResponseEntity.status(HttpStatus.FOUND)
                 .header("Location", errorUrl)
                 .build();
@@ -98,7 +102,7 @@ public class OAuth2Controller {
 
     @GetMapping("/failure")
     public ResponseEntity<?> oauth2Failure() {
-        String errorUrl = "http://localhost:5173/login?error=oauth2_failed";
+        String errorUrl = frontendUrl + "/login?error=oauth2_failed";
         return ResponseEntity.status(HttpStatus.FOUND)
             .header("Location", errorUrl)
             .build();
